@@ -1,0 +1,22 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Containerfile
+      args:
+        DEVELOPMENT_BASE: ${DEVELOPMENT_BASE:-docker.io/nixos/nix@sha256:c7cc6c8cb5d81bed19997247629604708fda95c99c43ac362daa05b6a68e8a24}
+    user: "${DEV_UID:-1000}:${DEV_GID:-1000}"
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 512
+    mem_limit: 4g
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,size=1g,mode=1777
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    command: [bash]
+    stdin_open: true
+    tty: true

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+  "runtime.version": "LuaJIT",
+  "runtime.path": [
+    "lua/?.lua",
+    "lua/?/init.lua"
+  ],
+  "workspace.checkThirdParty": false,
+  "workspace.library": [
+    "$VIMRUNTIME/lua"
+  ],
+  "workspace.ignoreDir": [
+    ".git",
+    "tests",
+    "build",
+    ".deps"
+  ],
+  "workspace.useGitIgnore": true,
+  "telemetry.enable": false,
+  "type.inferParamType": true,
+  "type.weakNilCheck": false,
+  "type.weakUnionCheck": false,
+  "type.checkTableShape": true,
+  "diagnostics.enable": true,
+  "diagnostics.disable": [],
+  "diagnostics.groupSeverity": {
+    "type-check": "Error",
+    "luadoc": "Error",
+    "unbalanced": "Error"
+  },
+  "diagnostics.neededFileStatus": {
+    "no-unknown": "Any",
+    "incomplete-signature-doc": "Any"
+  },
+  "diagnostics.severity": {
+    "no-unknown": "Error",
+    "incomplete-signature-doc": "Error"
+  }
+}

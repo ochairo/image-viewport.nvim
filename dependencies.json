@@ -1,0 +1,6 @@
+{
+  "image.nvim": {
+    "repository": "https://github.com/3rd/image.nvim",
+    "commit": "5c6f29a5069e1f7bd5773ce5907454063b0f125d"
+  }
+}

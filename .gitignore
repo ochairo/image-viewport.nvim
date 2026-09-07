@@ -1,0 +1,9 @@
+/.test-tmp/
+/build/
+/.deps/
+__pycache__/
+*.pyc
+*.luac
+*.log
+.env
+.env.*

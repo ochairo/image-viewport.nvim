@@ -1,0 +1,8 @@
+{
+  "annotated_modules": [
+    "lua/image_viewport/init.lua",
+    "lua/image_viewport/config.lua",
+    "lua/image_viewport/health.lua",
+    "lua/image_viewport/processor.lua"
+  ]
+}

@@ -1,0 +1,9 @@
+**
+!Containerfile
+!flake.nix
+!flake.lock
+!scripts/
+!scripts/fetch-dependencies.py
+!tests/
+!tests/dependencies.json
+!dependencies.json

@@ -1,0 +1,12 @@
+{
+  "revision": "5a72f3cd92d20e42250ecb672a5e739ea8d0619a",
+  "source": "components/neovim/home/.config/nvim/plugins/dotfiles-image-viewport",
+  "sha256": {
+    "lua/dotfiles_image/init.lua": "f95955caf12df0b923ad2ca107cbce864e20caa0b3f4fb6f1811c13aa8fc64c1",
+    "lua/dotfiles_image/processor.lua": "0da10adcdbb1e164d4c20230463a15ca9fa198ffd5d62dfbcdf03ce84039c237",
+    "lua/dotfiles_image/viewport.lua": "48f6cd7ee08f616f2ec2969cf9e48c145c65860e19ceed57a38cd1bec905179d",
+    "runtime/launch.py": "fdd533604245c6149c1fffdf26b12de5f0db1a0e92391123bc89c8b21c0909b3",
+    "runtime/policy.xml": "de67af936efd2f5f5427efd1dc8f62dd89173ba0ea9eac08fff9de7b76d51d40",
+    "runtime/worker.py": "4b822a1501e0f059a1558db1ebdb3c0e7ddb597c3d39f7d328c32f75b8548767"
+  }
+}

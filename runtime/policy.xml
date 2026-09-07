@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE policymap [
+  <!ELEMENT policymap (policy)*>
+  <!ATTLIST policymap xmlns CDATA #FIXED ''>
+  <!ELEMENT policy EMPTY>
+  <!ATTLIST policy xmlns CDATA #FIXED '' domain NMTOKEN #REQUIRED
+    name NMTOKEN #IMPLIED pattern CDATA #IMPLIED rights NMTOKEN #IMPLIED
+    stealth NMTOKEN #IMPLIED value CDATA #IMPLIED>
+]>
+<policymap>
+  <policy domain="resource" name="thread" value="2"/>
+  <policy domain="resource" name="time" value="10"/>
+  <policy domain="resource" name="file" value="64"/>
+  <policy domain="resource" name="memory" value="256MiB"/>
+  <policy domain="resource" name="map" value="256MiB"/>
+  <policy domain="resource" name="area" value="16MP"/>
+  <policy domain="resource" name="disk" value="128MiB"/>
+  <!-- ImageMagick creates a small internal working list even for one [0] frame. -->
+  <policy domain="resource" name="list-length" value="8"/>
+  <policy domain="resource" name="width" value="16KP"/>
+  <policy domain="resource" name="height" value="16KP"/>
+  <policy domain="cache" name="memory-map" value="anonymous"/>
+  <policy domain="delegate" rights="none" pattern="*"/>
+  <policy domain="filter" rights="none" pattern="*"/>
+  <policy domain="path" rights="none" pattern="-"/>
+  <policy domain="path" rights="none" pattern="[Ff][Dd]:*"/>
+  <policy domain="path" rights="none" pattern="@*"/>
+  <policy domain="path" rights="none" pattern="*../*"/>
+  <policy domain="module" rights="none" pattern="*"/>
+  <!-- MSVG translates validated SVG into an internal MVG stream. User input
+       can select only the fixed MSVG prefix inside the isolated worker. -->
+  <policy domain="module" rights="read | write" pattern="{PNG,JPEG,WEBP,GIF,BMP,HEIC,XPM,ICON,SVG,MVG}"/>
+  <policy domain="coder" rights="none" pattern="{HTTP,HTTPS,URL,MSL,TEXT,LABEL,CAPTION,EPHEMERAL,INLINE}"/>
+  <policy domain="system" name="symlink" rights="none" pattern="follow"/>
+  <policy domain="system" name="svg" rights="none" pattern="substitute-entities"/>
+  <policy domain="system" name="max-memory-request" value="256MiB"/>
+</policymap>
