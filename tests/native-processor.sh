@@ -14,21 +14,25 @@ if [ -f /run/.containerenv ]; then
   fail 'requires a configured native Linux guest, not the quality container'
 fi
 
-for dependency in /usr/bin/bwrap /usr/bin/gs /usr/bin/magick-im7.q16 /usr/bin/python3; do
+for dependency in /usr/bin/bwrap /usr/bin/gs /usr/bin/magick-im7.q16; do
   [ -x "$dependency" ] || fail "missing reviewed runtime dependency: $dependency"
 done
 
 mkdir -m 0700 "$test_root/cache" "$test_root/config" "$test_root/output" "$test_root/state"
 mkdir -p "$test_root/relocated plugin"
-cp -R "$source_plugin/lua" "$source_plugin/runtime" "$test_root/relocated plugin/"
+cp -R "$source_plugin/lua" "$source_plugin/tools" "$source_plugin/scripts" "$test_root/relocated plugin/"
+mkdir "$test_root/relocated plugin/runtime"
+cp "$source_plugin/runtime/policy.xml" "$test_root/relocated plugin/runtime/"
 find "$test_root/relocated plugin" -type d -exec chmod 0755 {} +
 find "$test_root/relocated plugin" -type f -exec chmod 0644 {} +
+chmod +x "$test_root/relocated plugin/scripts/"*
 runtime="$test_root/relocated plugin/runtime"
 
 run_processor() {
-  XDG_CONFIG_HOME=$test_root/config /usr/bin/python3 -I -S "$runtime/launch.py" "$@"
+  XDG_CONFIG_HOME=$test_root/config "$runtime/current/image-launch" "$@"
 }
 
+sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
 run_processor probe |
   grep -Fqx dotfiles-image-processor-probe-v1 || fail 'sandbox policy probe failed'
 
@@ -91,7 +95,7 @@ if run_processor identify jpeg "$test_root/source.png" > /dev/null 2>&1; then
 fi
 mkfifo "$test_root/source.fifo"
 fifo_status=0
-timeout 2 env XDG_CONFIG_HOME=$test_root/config /usr/bin/python3 -I -S "$runtime/launch.py" \
+timeout 2 env XDG_CONFIG_HOME=$test_root/config "$runtime/current/image-launch" \
   detect "$test_root/source.fifo" > /dev/null 2>&1 || fifo_status=$?
 [ "$fifo_status" -ne 0 ] || fail 'special-file image source was accepted'
 [ "$fifo_status" -ne 124 ] || fail 'special-file image source blocked before the sandbox boundary'
@@ -100,6 +104,7 @@ sed 's/domain="delegate" rights="none"/domain="delegate" rights="read | write"/'
   "$runtime/policy.xml" > "$runtime/policy.xml.new"
 mv "$runtime/policy.xml.new" "$runtime/policy.xml"
 chmod 0644 "$runtime/policy.xml"
+sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
 if run_processor probe > /dev/null 2>&1; then
   fail 'weakened ImageMagick delegate policy passed the startup probe'
 fi
@@ -110,6 +115,7 @@ sed 's/domain="module" rights="none"/domain="module" rights="read | write"/' \
   "$runtime/policy.xml" > "$runtime/policy.xml.new"
 mv "$runtime/policy.xml.new" "$runtime/policy.xml"
 chmod 0644 "$runtime/policy.xml"
+sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
 if run_processor probe > /dev/null 2>&1; then
   fail 'weakened ImageMagick module deny policy passed the startup probe'
 fi
@@ -120,6 +126,7 @@ sed 's/ICON,SVG,MVG}/ICON,SVG,MVG,TXT}/' \
   "$runtime/policy.xml" > "$runtime/policy.xml.new"
 mv "$runtime/policy.xml.new" "$runtime/policy.xml"
 chmod 0644 "$runtime/policy.xml"
+sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
 if run_processor probe > /dev/null 2>&1; then
   fail 'expanded ImageMagick module allowlist passed the startup probe'
 fi
@@ -130,6 +137,7 @@ sed 's/domain="coder" rights="none"/domain="coder" rights="read | write"/' \
   "$runtime/policy.xml" > "$runtime/policy.xml.new"
 mv "$runtime/policy.xml.new" "$runtime/policy.xml"
 chmod 0644 "$runtime/policy.xml"
+sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
 if run_processor probe > /dev/null 2>&1; then
   fail 'weakened ImageMagick coder deny policy passed the startup probe'
 fi
@@ -141,12 +149,14 @@ for policy_domain in delegate filter module coder; do
     "$runtime/policy.xml" > "$runtime/policy.xml.new"
   mv "$runtime/policy.xml.new" "$runtime/policy.xml"
   chmod 0644 "$runtime/policy.xml"
+  sh "$test_root/relocated plugin/scripts/build" || fail "runtime build failed"
   if run_processor probe > /dev/null 2>&1; then
     fail "additional ImageMagick $policy_domain override passed the startup probe"
   fi
   cp "$source_plugin/runtime/policy.xml" "$runtime/policy.xml"
   chmod 0644 "$runtime/policy.xml"
 done
+sh "$test_root/relocated plugin/scripts/build"
 
 victim=$test_root/victim
 printf '%s\n' unchanged > "$victim"
@@ -161,7 +171,7 @@ fi
 
 cancel_digest=$(printf cancelled-output | sha256sum)
 cancel_output=$test_root/output/${cancel_digest%% *}.png
-XDG_CONFIG_HOME=$test_root/config /usr/bin/python3 -I -S "$runtime/launch.py" \
+XDG_CONFIG_HOME=$test_root/config "$runtime/current/image-launch" \
   transform png "$test_root/source.png" "$cancel_output" none 4096 4096 0 0 0 0 none 0 png > /dev/null &
 cancel_pid=$!
 staging_seen=false

@@ -9,7 +9,7 @@ function M.check()
   if vim.fn.has("nvim-0.12") ~= 1 then
     vim.health.error("Neovim 0.12 or newer is required")
   end
-  for _, executable in ipairs({ "/usr/bin/python3", "/usr/bin/bwrap", "/usr/bin/magick-im7.q16", "/usr/bin/gs" }) do
+  for _, executable in ipairs({ "/usr/bin/bwrap", "/usr/bin/magick-im7.q16", "/usr/bin/gs" }) do
     if vim.fn.executable(executable) == 1 then
       vim.health.ok(executable .. " is executable")
     else

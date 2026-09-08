@@ -2,7 +2,7 @@
 
 Each repository owns its `Containerfile`, `flake.nix`, `flake.lock`, dependency lock,
 and Compose service. No sibling checkout or dotfiles installation is required.
-Neovim (at least 0.12), LuaLS, StyLua, Luacheck, Python, Make, Git and Linux test
+Neovim (at least 0.12), LuaLS, StyLua, Luacheck, Go (at least 1.25), Make, Git and Linux test
 utilities come from the immutable nixpkgs revision in `flake.lock`.
 
 ## Build once, test offline
@@ -55,9 +55,32 @@ Do not treat a CI definition, source-policy pass or unexecuted test as passing r
 evidence. Check [verification status](verification.md) for outstanding work.
 
 The image sets `IMAGE_VIEWPORT_DEPENDENCIES=/dependencies`. With local tools, explicitly
-run `python3 scripts/fetch-dependencies.py /new/canonical/destination` and set that variable
+run `scripts/fetch-dependencies /new/canonical/destination` and set that variable
 to the result. `make upstream-test` rematerializes the locked image.nvim Git objects into
 private state and checks loader/setup compatibility with synthetic processor/backend effects.
 `make native-test` exercises actual image formats, hostile inputs, cancellation and cache
 ownership on a configured Linux host. The portable image does not supply or certify that
 host's `/usr/bin/magick-im7.q16`, Ghostscript, font configuration or Bubblewrap kernel support.
+
+Repository tooling is Go 1.25+ and POSIX Shell. The module uses only the standard library;
+commands disable Go workspace/config overrides, automatic toolchain acquisition, module
+network access and telemetry. `make format` runs gofmt and StyLua; `make lint` runs go vet
+and Luacheck. Container checks use writable temporary Go caches with read-only sources.
+Development and Go contract tests target Linux; the image runtime supports amd64 and arm64.
+
+Additional Go verification:
+
+```sh
+go -C tools test -race ./...
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go -C tools build ./...
+GOOS=linux GOARCH=arm64 CGO_ENABLED=0 go -C tools build ./...
+```
+
+Failed dependency acquisition or handoff packaging may retain its newly created private
+output for inspection. Choose a new destination for a retry; existing destinations are
+never adopted or overwritten. Remove only your known failed output after inspection.
+
+Packaging inputs and new output parents require canonical, no-follow directory ancestry.
+The admitted directories must belong to the current user or root and must not be group-
+or world-writable, except root-owned sticky temporary ancestors. Shared writable
+checkouts must be copied into a private checkout before running packaging commands.

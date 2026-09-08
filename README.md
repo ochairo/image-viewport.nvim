@@ -7,7 +7,7 @@ sandboxed image processor. This is an extension; it does not replace image.nvim.
 
 - Neovim **0.12+** on Linux, with terminal pixel/cell dimensions and a Kitty graphics backend.
 - `3rd/image.nvim` at the exact revision in `dependencies.json`.
-- `/usr/bin/python3`, `/usr/bin/bwrap`, `/usr/bin/magick-im7.q16`, and `/usr/bin/gs`.
+- `/usr/bin/bwrap`, `/usr/bin/magick-im7.q16`, and `/usr/bin/gs`.
 - Bubblewrap user namespaces, sealed memfd support, `/etc/ld.so.cache`, `/etc/fonts`,
   and `/var/cache/fontconfig`. The required ImageMagick codecs/policy must pass the probe.
 
@@ -23,6 +23,7 @@ With lazy.nvim:
 ```lua
 {
   "ochairo/image-viewport.nvim",
+  build = "make build",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
     { "3rd/image.nvim", commit = "5c6f29a5069e1f7bd5773ce5907454063b0f125d" },
@@ -37,6 +38,13 @@ Do not separately call `require("image").setup()` or load its internals first. T
 plugin must install its processor before image.nvim loads the processor/magic modules.
 It owns image.nvim setup. Run `:checkhealth image_viewport` for dependency availability;
 setup performs the actual sandbox probe.
+
+Build once with `make build` on Linux using Go 1.25+ and Make. The build publishes
+a verified release under this checkout's `runtime/` directory; setup never compiles
+or downloads tools. Rebuild after changing or updating the owned Go sources or policy.
+The checkout and its ancestry must be canonical, owned by you or root, and not group-
+or world-writable (root-owned sticky temporary directories are admitted). Releases
+are owned by the current user; builds do not install into your home configuration.
 
 ## Configure
 
@@ -72,14 +80,15 @@ CI builds the same image and runs the complete portable gate offline.
 
 
 ```sh
-make static       # Python boundary tests and source checks
+make build        # compile and select the private Go image runtime
+make static       # Go boundary tests and source checks
 make test         # isolated Neovim setup/configuration tests
 make native-test  # actual sandbox, formats, hostile inputs, cache and cancellation
 make upstream-test # locked image.nvim loader/setup seam, with synthetic effects
 make check        # static, Neovim, formatting, lint, LuaLS and upstream seam
 ```
 
-Use Python 3.11+, Make, StyLua, Luacheck and LuaLS; set `NVIM` to select Neovim.
+Use Go 1.25+, Make, StyLua, Luacheck and LuaLS; set `NVIM` to select Neovim.
 Native tests require the Linux dependencies above and are separate from portable checks.
 They test a relocated checkout with spaces in its path, outside the Neovim config tree.
 

@@ -1,0 +1,22 @@
+#!/bin/sh
+set -eu
+umask 077
+root=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd -P)
+[ "$#" -gt 0 ] || { printf '%s\n' 'tool command required' >&2; exit 2; }
+name=$1
+shift
+case "$name" in plugin-tool|gdash-fixture|image-build) ;; *) exit 2 ;; esac
+export GOWORK=off GOFLAGS= GOENV=off GOTOOLCHAIN=local GOTELEMETRY=off GOPROXY=off GOSUMDB=off CGO_ENABLED=0
+GOROOT=$(go env GOROOT)
+export GOROOT
+temporary=$(mktemp -d "${TMPDIR:-/tmp}/plugin-tool.XXXXXX")
+die() { printf 'plugin tool: %s\n' "$*" >&2; exit 1; }
+. "$root/scripts/go-supervise.sh"
+trap go_runtime_cleanup EXIT
+trap 'go_runtime_grace=2; exit 129' HUP
+trap 'go_runtime_grace=2; exit 130' INT
+trap 'go_runtime_grace=2; exit 143' TERM
+GOCACHE=${GOCACHE:-$temporary/cache}
+export GOCACHE
+go_runtime_run go -C "$root/tools" build -trimpath -buildvcs=false -o "$temporary/tool" "./cmd/$name"
+go_runtime_run "$temporary/tool" "$@"

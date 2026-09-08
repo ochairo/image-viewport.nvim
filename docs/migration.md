@@ -13,3 +13,9 @@ before applying configuration. Roll back the consumer revision if required.
 Cache directory markers and the worker protocol deliberately retain their original
 `dotfiles-image-processor` names for safe ownership recognition. They are internal storage
 identities, not a dependency on dotfiles. Do not rename or adopt foreign cache directories.
+
+The Go extraction requires `build = "make build"` in the plugin specification (or an
+explicit local build before setup). Go is a build/development requirement, not an image
+processing dependency. Keep the full checkout with its build sources so runtime freshness
+can be verified. A missing, stale, or tampered release fails closed. The dotfiles managed
+home runtime is not imported or adopted by this standalone plugin.

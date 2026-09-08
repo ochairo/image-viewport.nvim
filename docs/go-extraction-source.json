@@ -1,0 +1,30 @@
+{
+  "source_repository": "ochairo/dotfiles",
+  "revision": "52ba491e701e9c80f43c52dde53d993dbcb1bc2e",
+  "source_sha256": {
+    "tools/imageprocessor/files_linux.go": "e7bdb2e5cfc0da0f0dd7b42712310f34531bd3a926f305675703adce1162dc1f",
+    "tools/imageprocessor/files_linux_test.go": "1d47362a311e037b1ba0a5cfa47c9eec535654d6028b98129d18f06efa66243b",
+    "tools/imageprocessor/fuzz_linux_test.go": "a84016869fa1640086a40f226b173d9bf7607e4f02eff572ced90119f2559ca3",
+    "tools/imageprocessor/launch_linux.go": "58f953ef7527334cda7946d09fcee08984a75e9dacc7189799b15521822a75c4",
+    "tools/imageprocessor/process_linux.go": "058cd4932eb52d1d703718afed931657a00923009341794bf08c2f307cb469d2",
+    "tools/imageprocessor/process_linux_test.go": "74ef73e1cd9508291ae261197a71b573ef6ea380dea59bc5f7ad5b050047e75e",
+    "tools/imageprocessor/runtime_linux.go": "ceceafb951a9267268204731ae50cc70c11c61d1f0950ab5ed6ccb02c13b2e12",
+    "tools/imageprocessor/syscall_linux_amd64.go": "cad4e3dbccb26ed7489894000272f5b2a6d6e53e59975f2c2b2826d94c6c3b08",
+    "tools/imageprocessor/syscall_linux_arm64.go": "5bf5b65bae42b9c02c3ddef04ee562cd58940401337aca1db7405e6ec300d8ec",
+    "tools/imageprocessor/worker_linux.go": "6869150233339fe366e55497b9781812f46238099c256b57d9f7e2764a92faf4",
+    "tools/imageprocessor/worker_linux_test.go": "31fc934aa3b1fe005a8d8344ced5e8ef31d38a754f794988be0f50ad9c4df11b",
+    "tools/imageprocessor/worker_probe_linux.go": "cc61117c43095fcc5c1e1743aa67bf49ca926f589fe18b48ea60489e0d6df97e",
+    "tools/managedtree/fd_linux.go": "fee2c864b6adf46c7ed2765846a5c8a0edb2392dbbf3de9d341da61564137fdf",
+    "tools/cmd/image-launch/main_linux.go": "6e171113ca975ec40f6c1ea36ea1db2c4e38c6d9b5749b4cc9068ca8a351b7cd",
+    "tools/cmd/image-worker/main_linux.go": "bd279c3accfb62394284ca7817c1af6cc62b627e87607acef93628583a7dc3d0",
+    "components/go-runtime/supervise.sh": "8d713a6bce4e5cf5d3141944d034844717e5c014868ab259d1359fdda2a9eb9c"
+  },
+  "adaptations": [
+    "Repository-local Go module; no sibling dependency.",
+    "Standalone plugin paths and existing extracted Lua API retained.",
+    "Repository Python tooling and tests ported to Go/Shell; original extraction provenance remains separate.",
+    "Only managedtree directory admission is retained.",
+    "Plugin-local content-addressed releases bind source inventory and output integrity; relative selector preserves relocation.",
+    "Shared supervision owns development command descendants and captured output; Shell supervisor covers initial compiler bootstrap."
+  ]
+}

@@ -252,12 +252,16 @@ local function trusted_runtime()
     return nil
   end
   local root = vim.fs.dirname(vim.fs.dirname(vim.fs.dirname(source)))
-  local runtime = vim.fs.joinpath(root, "runtime")
+  local parent = vim.fs.joinpath(root, "runtime")
+  local runtime = uv.fs_realpath(vim.fs.joinpath(parent, "current"))
+  if not runtime or vim.fs.dirname(runtime) ~= parent then
+    return nil
+  end
   if not trusted_path(runtime, "directory", false) then
     return nil
   end
-  for _, name in ipairs({ "launch.py", "worker.py", "policy.xml" }) do
-    if not trusted_path(vim.fs.joinpath(runtime, name), "file", false) then
+  for _, name in ipairs({ "image-launch", "image-worker", "policy.xml", "source.sha256", ".dotfiles-managed-version" }) do
+    if not trusted_path(vim.fs.joinpath(runtime, name), "file", name == "image-launch" or name == "image-worker") then
       return nil
     end
   end
@@ -723,11 +727,10 @@ function M.install(options)
     return nil, "image processor runtime overrides are not permitted"
   end
   local runtime = trusted_runtime()
-  local python = uv.fs_realpath("/usr/bin/python3")
-  if not runtime or not python or not trusted_path(python, "file", true, true) then
-    return nil, "image viewport runtime or /usr/bin/python3 is unavailable"
+  if not runtime then
+    return nil, "image viewport runtime is unavailable; run make build in the plugin checkout"
   end
-  state.launcher = { python, "-I", "-S", vim.fs.joinpath(runtime, "launch.py") }
+  state.launcher = { vim.fs.joinpath(runtime, "image-launch") }
   if
     package.loaded["image/processors/magick_cli"]
     or package.loaded["image/utils"]
